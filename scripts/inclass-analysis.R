@@ -96,8 +96,20 @@ class_metrics <- metric_set(sensitivity,
                             accuracy,
                             roc_auc)
 
+#the professors code didn't run so I added mutate because the actual and predicted groups converted into factors
+# testing(biomarker_split) %>%
+#   add_predictions(fit, type = 'response') %>%
+#  class_metrics(estimate = factor(pred > 0.5),
+#              truth = factor(class), pred,
+#              event_level = 'second')
+
+
 testing(biomarker_split) %>%
   add_predictions(fit, type = 'response') %>%
-  class_metrics(estimate = factor(pred > 0.5),
-              truth = factor(class), pred,
-              event_level = 'second')
+  mutate(class = factor(class),
+    predicted_class = factor(pred > 0.5)
+  ) %>%
+  class_metrics(estimate = predicted_class,
+    truth = class, pred,
+    event_level = 'second'
+  )
