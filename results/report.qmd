@@ -39,7 +39,7 @@ Summarize your findings here. I've included some subheaders in a way that seems 
 
 ### Impact of preprocessing and outliers
 
-Tasks 1-2
+To investigate what preprocessing did we first examined what the raw distribution of the protein levels looked like in comparison to the log-transformed numbers. After analysis it was determined that a log transformation was applied because a lot of the data was right skewed. This means that while most subjects had low proteins, some did have high. In order to reduce the influence of the extrems they needed to be compressed with log transformation. However, it should be noted that even after a log transformation, not every protein is normally distributed, and some are left as right skewed.
 
 ### Methodological variations
 
