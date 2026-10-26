@@ -1,5 +1,5 @@
 # outliers 
-outliers_by_subject <- biomarker_clean %>%
+outliers_sub<- biomarker_clean %>%
   mutate(subject = row_number()) %>%
   pivot_longer(-c(group, ados, subject),
                names_to = 'protein',
@@ -9,8 +9,9 @@ outliers_by_subject <- biomarker_clean %>%
   arrange(desc(n_outliers))
 
 
+
 # outliers by group
-outliers_by_subject %>%
+outliers_sub%>%
   group_by(group) %>%
   summarize(
     total = sum(n_outliers),
@@ -18,3 +19,5 @@ outliers_by_subject %>%
     subjects = sum(n_outliers > 0),
     n = n()
   )
+
+outliers_sub
