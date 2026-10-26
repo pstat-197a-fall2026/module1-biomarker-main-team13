@@ -1,7 +1,12 @@
 ---
 title: "Biomarkers of ASD"
 subtitle: "If you want a subtitle put it here"
-author: "List names here"
+authors: 
+  - "Alison last name"
+  - "James last name"
+  - "Karla Hernandez"
+  - "Philip last name"
+  - "Ryan last name"
 date: last-modified
 published-title: "Updated"
 editor: visual
