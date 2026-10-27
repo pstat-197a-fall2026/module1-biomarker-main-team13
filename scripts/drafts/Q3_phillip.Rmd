@@ -13,10 +13,8 @@ library(modelr)
 library(yardstick)
 ```
 
-
+Original Analysis:
 ```{r}
-# original analysis
-
 load('~/Desktop/Pstat 197A/module1-biomarker-main-team13/data/biomarker-clean.RData')
 
 ## MULTIPLE TESTING
@@ -121,8 +119,13 @@ og_results <- testing(biomarker_split) %>%
 
 og_results
 ```
+Original Results:
+sensitivity: 0.9375000		
+specificity: 0.7333333		
+accuracy: 0.8387097		
+roc_auc: 0.8958333	
 
-
+Train/Test Split:
 ```{r}
 set.seed(197)
 
@@ -204,7 +207,7 @@ train_results <- testing_sstar %>%
 print(train_results)
 
 data.frame(metric = og_results$.metric, 
-           diff =  train_results$.estimate - og_results$.estimate) 
+           diff =  train_results$.estimate - og_results$.estimate)
 
 # When we carry out the entire selection procedure on a training partition
 # Every estimated value is significantly lower than our initial findings
@@ -214,7 +217,13 @@ data.frame(metric = og_results$.metric,
 # However, it is important to note that our original analyis may have overfitted
 # Note that our diff column is (new - old)
 ```
+Train/Test Split Results:
+sensitivity: 0.545
+specificity: 0.636
+accuracy: 0.591
+roc_auc: 0.705
 
+Choosing larger subset of predictive proteins:
 ```{r}
 set.seed(197)
 
@@ -298,8 +307,102 @@ data.frame(metric = og_results$.metric,
 # Every metric except sensitivity, which remained the same, increased
 # The smallest and largest increases were approximately .07 and .2, respectively
 ```
+25 Proteins Results:
+sensitivity: 0.812
+specificity: 0.933
+accuracy: 0.871
+roc_auc: 0.95
 
+Fuzzy Intersection:
+```{r}
+set.seed(101422)
 
+#Assigning protein ranks by 
+
+# Rank all proteins by RF importance
+rf_membership <- rf_out$importance %>%
+  as_tibble(rownames = "protein") %>%
+  mutate(
+    rf_rank = rank(-MeanDecreaseGini),
+    mu_rf = 1 - (rf_rank - 1) / (n() - 1)
+  ) %>%
+  select(protein, rf_rank, mu_rf)
+
+# Rank all proteins by adjusted t-test p-value
+t_membership <- ttests_out %>%
+  mutate(
+    t_rank = rank(p.adj),
+    mu_t = 1 - (t_rank - 1) / (n() - 1)
+  ) %>%
+  select(protein, t_rank, mu_t)
+
+# Combine memberships using the minimum operator
+fuzzy_proteins <- inner_join(
+  rf_membership, t_membership,
+  by = "protein"
+) %>%
+  mutate(
+    mu_fuzzy = pmin(mu_rf, mu_t)
+  ) %>%
+  arrange(desc(mu_fuzzy))
+
+# Select the proteins with the highest fuzzy memberships
+proteins_fuzzy <- fuzzy_proteins %>%
+  slice_max(mu_fuzzy, n = 10, with_ties = FALSE) %>%
+  pull(protein)
+```
+
+```{r}
+setdiff(proteins_fuzzy, proteins_sstar)
+setdiff(proteins_sstar, proteins_fuzzy)
+```
+
+Logistic Regression
+```{r}
+biomarker_fuzzy <- biomarker_clean %>%
+  select(group, any_of(proteins_fuzzy)) %>%
+  mutate(class = (group == 'ASD')) %>%
+  select(-group)
+
+# partition into training and test set
+set.seed(101422)
+biomarker_split <- biomarker_fuzzy %>%
+  initial_split(prop = 0.8)
+
+# fit logistic regression model to training set
+fit <- glm(class ~ ., 
+           data = training(biomarker_split), 
+           family = 'binomial')
+
+# evaluate errors on test set
+class_metrics <- metric_set(sensitivity, 
+                            specificity, 
+                            accuracy,
+                            roc_auc)
+
+fuzzy_results <- testing(biomarker_split) %>%
+  add_predictions(fit, type = 'response') %>%
+  mutate(class = factor(class),
+    predicted_class = factor(pred > 0.5)
+  ) %>%
+  class_metrics(estimate = predicted_class,
+                truth = class, pred,
+                event_level = 'second'
+  )
+
+data.frame(metric = og_results$.metric, 
+           diff = fuzzy_results$.estimate - og_results$.estimate)
+
+#Through fuzzy intersection, we achieved a raw overall improvement
+#Specificity (0.2) and auc (0.05),slight decrease in sensitivity (-0.19)
+#Applied min-max normalization to calculate membership of rf and t-test, which we took the pmin between the two membership scores.
+#Should account for different methods in calculating membership scores.
+```
+Fuzzy Results:
+sensitivity: 0.7500000		
+specificity: 0.9333333		
+accuracy: 0.8387097		
+roc_auc: 0.9500000
 
 
 
