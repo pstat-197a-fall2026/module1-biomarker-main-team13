@@ -28,9 +28,13 @@ library(tidyverse)
 
 ## Abstract
 
+Because many proteins in plasma/serum are altered in Autism Spectrum Disorder (ASD), a panel of proteins can be a blood biomarker for ASD. Therefore, in this module, we
+
 Write a brief one-paragraph abstract that describes the contents of your write-up.
 
 ## Dataset
+
+The dataset contained 1,125 proteins used as a panel for Autism Spectrum Disorder (ASD) prediction in boys. The sample included 76 boys with ASD and 78 typically developing (TD) boys, between 18 months and 8 years of age,
 
 Write a brief data description, including: how data were obtained; sample characteristics; variables measured; and data preprocessing. This can be largely based on the source paper and should not exceed 1-2 paragraphs.
 
