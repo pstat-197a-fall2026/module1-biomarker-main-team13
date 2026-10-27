@@ -2,7 +2,7 @@
 title: "Biomarkers of ASD"
 subtitle: "If you want a subtitle put it here"
 authors: 
-  - "Alison last name"
+  - "Alison Gu"
   - "James last name"
   - "Karla Hernandez"
   - "Philip last name"
