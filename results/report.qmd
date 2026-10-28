@@ -6,7 +6,7 @@ authors:
   - "James last name"
   - "Karla Hernandez"
   - "Philip last name"
-  - "Ryan last name"
+  - "Ryan Au"
 date: last-modified
 published-title: "Updated"
 editor: visual
@@ -58,4 +58,25 @@ Task 3
 
 ### Improved classifier
 
-Task 4
+Our methodology was to use forward selection from the 30 proteins with the smallest t-test p-values, adding the protein that improved 5-fold cross-validated AUC, stopping when the gain fell below 0.005, similar to what the published paper conducted. We found that the new panel that best improved AUC was as follows: DERM, MAPK2, IgD, P-Cadherin and PTN. The original panel had the following proteins: DERM, RELT, and IgD. Like in the in-class analysis, the panel was selected using the full dataset, so the test data were also seen during both panels' accuracy estimates are likely optimistic to some degree.
+
+|	Single Split Metrics	|	In-Class	|	New Panel	|	Delta	|
+|---------------------------|---------------|---------------|-----------|
+|	Sensitivity				|	0.875		|	0.750		|	-0.125	|
+|	Specificity				|	0.733		|	0.933		|	+0.200	|
+|	Accuracy				|	0.806		|	0.839		|	+0.033	|
+|	AUC						|	0.892		|	0.975		|	+0.083	|
+
+
+|	Repeated Split Metrics	|	In-Class Panel	|	New Panel	|	Delta	|
+|---------------------------|-------------------|---------------|-----------|
+|	Sensitivity				|	0.748			|	0.714		|	-0.034	|
+|	Specificity				|	0.751			|	0.852		|	+0.101	|
+|	Accuracy				|	0.746			|	0.783		|	+0.037	|
+|	AUC						|	0.828			|	0.877		|	+0.049	|
+
+With only 31 subjects, the single-split accuracy gain amounts to about one additional correct classification, so we also averaged over 30 random splits. Both panels score lower when averaged over 30 splits than on the in-class split. However, the new panel outperforms the in-class panel in both settings.
+
+With this new panel, from the single split metrics we found an improvement in accuracy from 0.806 to 0.839 (+0.033), and an increase in AUC from 0.892 to 0.975 (+0.083). As for the 30-split average, accuracy rose from 0.746 to 0.783 (+0.037), and AUC grew from 0.828 to 0.877 (+0.049). This tells us that the new panel improves the accuracy and AUC by a non-negligible margin. The improvement comes from specificity (+0.200, +0.101) at the cost of some sensitivity (-0.125, -0.034).
+
+Our initial implementation of the classification model of the same procedure utilized Python and yielded a similar panel (DERM, IgD, MAPK2, FSTL1, P-Cadherin, and EPHB2, four proteins in common) with comparable performance (0.790 for accuracy and 0.874 for AUC on repeated split). The contrasts likely stem from how R and Python form cross-validation folds differently.
