@@ -5,7 +5,7 @@ authors:
   - "Alison Gu"
   - "James Liang"
   - "Karla Hernandez"
-  - "Philip last name"
+  - "Phillip Phi"
   - "Ryan Au"
 date: last-modified
 published-title: "Updated"
@@ -52,16 +52,16 @@ After, we examined the what would happen if you removed the outlier trimming fro
 
 ### Methodological variations
 
-| Metrics     | Original Analysis | Train/Test Split | 25 Subset | Fuzzy Intersection |
-|---------------|---------------|---------------|---------------|---------------|
-| Sensitivity | 0.938             | -0.392           | -0.125    | -0.188             |
-| Specificity | 0.733             | -0.097           | 0.200     | 0.200              |
-| Accuracy    | 0.839             | -0.248           | 0.032     | 0.000              |
-| ROC AUC     | 0.896             | -0.191           | 0.054     | 0.054              |
+| Metrics | Original Analysis | Train/Test Split | 25 Subset | Fuzzy Intersection | Fuzzy Intersection 2 |
+|--------------|---------|-------------|----------|-----------|----------------|
+| Sensitivity | 0.938 | -0.392 | -0.125 | -0.188 | -0.062 |
+| Specificity | 0.733 | -0.097 | 0.200 | 0.200 | 0.133 |
+| Accuracy | 0.839 | -0.248 | 0.032 | 0.000 | 0.032 |
+| ROC AUC | 0.896 | -0.191 | 0.054 | 0.054 | 0.058 |
 
 : Difference of metric values from original analysis and protein selection design changes
 
-For our modifications in protein selection, we first took a 71/29 training and testing split and conducted the selection procedure only on the training partition. Comparing the original and training partition metric set, every estimated value was significantly lower than our initial findings. The smallest metric difference, specificity, decreased by approximately 9%, while the largest metric decrease, sensitivity, fell approximately 33%. Overall, the modified model performs worse than the original analysis. Since the initial metrics were calculated using the entire dataset for protein/variable selection, this stark difference may be explained in part from overfitting to the data. Calculating with the entire dataset again, we explored increasing the amount of predictive proteins. The original method involved a hard intersection of the top 10 random forest and 10 t-test proteins, giving our baseline predictors DERM, RELT, and IgD. We decided on increasing the candidate proteins from each selection method to 25 and acquired 12 additional proteins. This offered a net improvement in specificity, accuracy, and ROC AUC, with specificity increasing the most by 20% but sensitivity falling 12.5%. Lastly, we applied a fuzzy intersection. The proteins were ranked based on their respective Gini importance or adj. p values. Then, we calculated the protein's random forest and t-test membership scores through min-max normalization, and assigned the minimum score among the two as the protein's final score. This intersection method gave 10 proteins including the baseline, performing worse relative to the 25 protein subset method. Specificity and ROC AUC increased by the same amount, but there was no effect on accuracy, and a greater decrease in sensitivity by 18.75%.
+For our modifications in protein selection, we first took a 71/29 training and testing split and conducted the selection procedure only on the training partition. Comparing the original and training partition metric set, every estimated value was significantly lower than our initial findings. The smallest metric difference, specificity, decreased by approximately 9%, while the largest metric decrease, sensitivity, fell approximately 33%. Overall, the modified model performs worse than the original analysis. Since the initial metrics were calculated using the entire dataset for protein/variable selection, this stark difference may be explained in part from overfitting to the data. Calculating with the entire dataset again, we explored increasing the amount of predictive proteins. The original method involved a hard intersection of the top 10 random forest and 10 t-test proteins, giving our baseline predictors DERM, RELT, and IgD. We decided on increasing the candidate proteins from each selection method to 25 and acquired 12 additional proteins. This offered a net improvement in specificity, accuracy, and ROC AUC, with specificity increasing the most by 20% but sensitivity falling 12.5%. Lastly, we applied a fuzzy intersection. The proteins were ranked based on their respective Gini importance or adj. p values. Then, we calculated the protein's random forest and t-test membership scores through min-max normalization, and assigned the minimum score among the two as the protein's final score. This intersection method gave 10 proteins including the baseline, performing worse relative to the 25 protein subset method. Specificity and ROC AUC increased by the same amount, but there was no effect on accuracy, and a greater decrease in sensitivity by 18.75%. We also performed a second fuzzy intersection, where we subtracted 1 by each protein's t-test p-value and combined it with their random forest importance values. We took the difference between 1 and p-value so that larger numbers would mean better attributes for selection, and by taking the average between it and importance, we attempted to find the overall most influential proteins in both methods. Then, we selected the top 10 proteins with the highest average values and proceeded with the analysis as usual. Similar to our initial fuzzy intersection, sensitivity is the only metric that decreased; however, our new intersection has a slightly increased accuracy unlike the previous one which had no difference. Our specificity and ROC AUC metrics has roughly similar increases, while our new sensitivity change is much smaller with a decrease of approximately 6.2% rather than 18.8%.
 
 ### Improved classifier
 
