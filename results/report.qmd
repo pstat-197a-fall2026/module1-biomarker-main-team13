@@ -19,8 +19,6 @@ execute:
   cache: true
 ---
 
-Use this as a template. Keep the headers and remove all other text. In all, your report can be quite short. When it is complete, render and then push changes to your team repository.
-
 ```{r}
 # load any other packages and read data here
 library(tidyverse)
@@ -28,9 +26,7 @@ library(tidyverse)
 
 ## Abstract
 
-Because many proteins in plasma/serum are altered in Autism Spectrum Disorder (ASD), a panel of proteins can be a blood biomarker for ASD. Therefore, in this module, we
-
-Write a brief one-paragraph abstract that describes the contents of your write-up.
+Because many proteins in plasma/serum are altered in Autism Spectrum Disorder (ASD), a panel of proteins can be a blood biomarker for ASD. Therefore, in this module, we investigated how preprocessing, outlier removal, and protien selection methods affect a classification model that distinguishes between individuals with Autism Spectrum Disorder (ASD) and those who are typically developing (TD). We found that log transformation reduced how skewed a model was and that TD individuals typically had more outliers on average in comparison to ASD individuals. Furthermore, changes in protein selection can change how a model preforms, possibly over fitting to the data. Finally we improved our classifier and increased accuracy from 0.746 to 0.783 and ACU from 0.828 to 0.877. Overall, highlighting the importance of preprocessing and protein selections when improving ASD classification models.
 
 ## Dataset
 
@@ -55,7 +51,7 @@ After, we examined the what would happen if you removed the outlier trimming fro
 ### Methodological variations
 
 | Metrics     | Original Analysis | Train/Test Split | 25 Subset | Fuzzy Intersection |
-|------------|-------------|-----------------|--------------|------------------|
+|---------------|---------------|---------------|---------------|---------------|
 | Sensitivity | 0.938             | -0.392           | -0.125    | -0.188             |
 | Specificity | 0.733             | -0.097           | 0.200     | 0.200              |
 | Accuracy    | 0.839             | -0.248           | 0.032     | 0.000              |
@@ -69,20 +65,19 @@ For our modifications in protein selection, we first took a 71/29 training and t
 
 Our methodology was to use forward selection from the 30 proteins with the smallest t-test p-values, adding the protein that improved 5-fold cross-validated AUC, stopping when the gain fell below 0.005, similar to what the published paper conducted. We found that the new panel that best improved AUC was as follows: DERM, MAPK2, IgD, P-Cadherin and PTN. The original panel had the following proteins: DERM, RELT, and IgD. Like in the in-class analysis, the panel was selected using the full dataset, so the test data were also seen during both panels' accuracy estimates are likely optimistic to some degree.
 
-|	Single Split Metrics	|	In-Class	|	New Panel	|	Delta	|
-|---------------------------|---------------|---------------|-----------|
-|	Sensitivity				|	0.875		|	0.750		|	-0.125	|
-|	Specificity				|	0.733		|	0.933		|	+0.200	|
-|	Accuracy				|	0.806		|	0.839		|	+0.033	|
-|	AUC						|	0.892		|	0.975		|	+0.083	|
+| Single Split Metrics | In-Class | New Panel | Delta  |
+|----------------------|----------|-----------|--------|
+| Sensitivity          | 0.875    | 0.750     | -0.125 |
+| Specificity          | 0.733    | 0.933     | +0.200 |
+| Accuracy             | 0.806    | 0.839     | +0.033 |
+| AUC                  | 0.892    | 0.975     | +0.083 |
 
-
-|	Repeated Split Metrics	|	In-Class Panel	|	New Panel	|	Delta	|
-|---------------------------|-------------------|---------------|-----------|
-|	Sensitivity				|	0.748			|	0.714		|	-0.034	|
-|	Specificity				|	0.751			|	0.852		|	+0.101	|
-|	Accuracy				|	0.746			|	0.783		|	+0.037	|
-|	AUC						|	0.828			|	0.877		|	+0.049	|
+| Repeated Split Metrics | In-Class Panel | New Panel | Delta  |
+|------------------------|----------------|-----------|--------|
+| Sensitivity            | 0.748          | 0.714     | -0.034 |
+| Specificity            | 0.751          | 0.852     | +0.101 |
+| Accuracy               | 0.746          | 0.783     | +0.037 |
+| AUC                    | 0.828          | 0.877     | +0.049 |
 
 With only 31 subjects, the single-split accuracy gain amounts to about one additional correct classification, so we also averaged over 30 random splits. Both panels score lower when averaged over 30 splits than on the in-class split. However, the new panel outperforms the in-class panel in both settings.
 
