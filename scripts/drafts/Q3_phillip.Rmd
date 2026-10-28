@@ -15,7 +15,8 @@ library(yardstick)
 
 Original Analysis:
 ```{r}
-load('~/Desktop/Pstat 197A/module1-biomarker-main-team13/data/biomarker-clean.RData')
+#load('data/biomarker-clean.RData')
+#load('~/Desktop/Pstat 197A/module1-biomarker-main-team13/data/biomarker-clean.RData')
 
 ## MULTIPLE TESTING
 ####################
@@ -214,7 +215,7 @@ data.frame(metric = og_results$.metric,
 # The smallest metric difference, specificity, is a decrease of approximately .09
 # The largest metric decrease, sensitivity, is by approximately 0.33
 # Overall, our new model performs worst than our original analysis
-# However, it is important to note that our original analyis may have overfitted
+# However, it is important to note that our original analysis may have overfitted
 # Note that our diff column is (new - old)
 ```
 Train/Test Split Results:
@@ -317,7 +318,7 @@ Fuzzy Intersection:
 ```{r}
 set.seed(101422)
 
-#Assigning protein ranks by 
+#Assigning protein membership score by min-max normalization
 
 # Rank all proteins by RF importance
 rf_membership <- rf_out$importance %>%
@@ -394,7 +395,7 @@ data.frame(metric = og_results$.metric,
            diff = fuzzy_results$.estimate - og_results$.estimate)
 
 #Through fuzzy intersection, we achieved a raw overall improvement
-#Specificity (0.2) and auc (0.05),slight decrease in sensitivity (-0.19)
+#Specificity (0.2) and auc (0.05), slight decrease in sensitivity (-0.19)
 #Applied min-max normalization to calculate membership of rf and t-test, which we took the pmin between the two membership scores.
 #Should account for different methods in calculating membership scores.
 ```
