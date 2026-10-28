@@ -65,15 +65,6 @@ proteins_s2 <- rf_out$importance %>%
 
 proteins_sstar <- intersect(proteins_s1, proteins_s2)
 
-# performs a fuzzy intersection 
-# takes the average value of (1-p_value) and MeanDecreaseGini for each protein
-# takes the top 10 proteins with the highest average values
-proteins_sstar2 <- proteins_s11 %>% 
-  inner_join(proteins_s22) %>% 
-  mutate(avg = (anti_pvalue + MeanDecreaseGini)/2) %>%
-  slice_max(avg, n = 10) %>%
-  pull(protein)
-
 biomarker_sstar <- biomarker_clean %>%
   select(group, any_of(proteins_sstar)) %>%
   mutate(class = (group == 'ASD')) %>%
