@@ -36,7 +36,13 @@ Write a brief data description, including: how data were obtained; sample charac
 
 ## Summary of published analysis
 
-Summarize the methodology of the paper in 1-3 paragraphs. You need not explain the methods in depth as we did in class; just indicate what methods were used and how they were combined. If possible, include a diagram that depicts the methodological design. (Quarto has support for [GraphViz and Mermaid flowcharts](https://quarto.org/docs/authoring/diagrams.html).) Provide key results: the proteins selected for the classifier and the estimated accuracy.
+The dataset from Hewitson et al. (2021) contains protein samples from 154 boys between the ages of 18 months and 8 years old. 76 of the subjects had Autism Spectrum Disorder (ASD) while 78 were typically developing (TD). While there were originally 1,317 proteins that were measured , 192 failed quality control so 1,125 proteins were used for the publication. However, since we are unsure which of these failed we used all originally collected proteins in our analysis.
+
+This data was preprocessed with a log transformation, a standarization, and an outlier trimming. Then three methods identified proteins, namely random forests, t-tests, and correlation analysis with ASD severity scores. Afterward, 10 proteins from each of the prior methods were used to identify a smaller group of potential proteins to use for analysis. The five proteins that were picked were MAPK14, IgD, DERM, EPHB2, and suPAR. After adding four other proteins to improve performance they used logistic regression as a form of classification with an 80/20 training/testing split. As a result, they got an AUC of .860, sensitivity of 83.5%, and specificity of 82.2%
+
+However, it should be noted that there was an error in the analysis which caused the paper to be retracted as the results were unable to be replicated. This indicates that the original findings were not reliable.
+
+### 
 
 ## Findings
 
