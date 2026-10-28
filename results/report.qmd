@@ -26,23 +26,19 @@ library(tidyverse)
 
 ## Abstract
 
-Because many proteins in plasma/serum are altered in Autism Spectrum Disorder (ASD), a panel of proteins can be a blood biomarker for ASD. Therefore, in this module, we investigated how preprocessing, outlier removal, and protien selection methods affect a classification model that distinguishes between individuals with Autism Spectrum Disorder (ASD) and those who are typically developing (TD). We found that log transformation reduced how skewed a model was and that TD individuals typically had more outliers on average in comparison to ASD individuals. Furthermore, changes in protein selection can change how a model preforms, possibly over fitting to the data. Finally we improved our classifier and increased accuracy from 0.746 to 0.783 and ACU from 0.828 to 0.877. Overall, highlighting the importance of preprocessing and protein selections when improving ASD classification models.
+Because many proteins in plasma/serum are altered in Autism Spectrum Disorder (ASD), a panel of proteins can be a blood biomarker for ASD. Therefore, in this module, we investigated how preprocessing, outlier removal, and protein selection methods affect a classification model that distinguishes between individuals with Autism Spectrum Disorder (ASD) and those who are typically developing (TD). We found that log transformation reduced the right skewness of the protein distributions and that TD individuals typically had more outliers on average in comparison to ASD individuals. Furthermore, changes in protein selection can change how a model performs, suggesting possible overfitting in the original analysis. Finally, we improved our classifier and increased accuracy from 0.746 to 0.783 and AUC from 0.828 to 0.877. Overall, our findings highlight the importance of preprocessing and protein selection when improving ASD classification models.
 
 ## Dataset
 
-The dataset contained 1,125 proteins used as a panel for Autism Spectrum Disorder (ASD) prediction in boys. The sample included 76 boys with ASD and 78 typically developing (TD) boys, between 18 months and 8 years of age,
+The dataset from Hewitson et al. (2021) contained 1,125 proteins used as a panel for Autism Spectrum Disorder (ASD) prediction in boys. The sample, which was collected via a blood test, included 76 boys with ASD and 78 typically developing (TD) boys, between 18 months and 8 years of age. While 1,317 were originally collected per subject, 192 proteins failed quality control so 1,125 were used in the publication.
 
-Write a brief data description, including: how data were obtained; sample characteristics; variables measured; and data preprocessing. This can be largely based on the source paper and should not exceed 1-2 paragraphs.
+The data was preprocessed with log transformation, standardization, outlier trimming, and quality control. The log transformation reduced the right skewness of the protein distributions. The standardization converted measurements to z-scores to make them comparable to each other. Outlier trimming was used to reduce the influence of extreme values by limiting standardized protein measurements to the range of −3 to +3.
 
 ## Summary of published analysis
 
-The dataset from Hewitson et al. (2021) contains protein samples from 154 boys between the ages of 18 months and 8 years old. 76 of the subjects had Autism Spectrum Disorder (ASD) while 78 were typically developing (TD). While there were originally 1,317 proteins that were measured , 192 failed quality control so 1,125 proteins were used for the publication. However, since we are unsure which of these failed we used all originally collected proteins in our analysis.
+The dataset from Hewitson et al. (2021) was preprocessed with a log transformation, a standardization, and an outlier trimming. Then three methods identified proteins, namely random forests, t-tests, and correlation analysis with ASD severity scores. Afterward, 10 proteins from each of the prior methods were used to identify a smaller group of potential proteins to use for analysis. The five proteins that were picked were MAPK14, IgD, DERM, EPHB2, and suPAR. After adding four other proteins (ROR1, GI24, eIF-4H, and ARSB) to improve performance they used logistic regression as a form of classification with a repeated 80/20 training/testing split. As a result, they got an AUC of .860, sensitivity of 83.5%, and specificity of 82.2%
 
-This data was preprocessed with a log transformation, a standarization, and an outlier trimming. Then three methods identified proteins, namely random forests, t-tests, and correlation analysis with ASD severity scores. Afterward, 10 proteins from each of the prior methods were used to identify a smaller group of potential proteins to use for analysis. The five proteins that were picked were MAPK14, IgD, DERM, EPHB2, and suPAR. After adding four other proteins to improve performance they used logistic regression as a form of classification with an 80/20 training/testing split. As a result, they got an AUC of .860, sensitivity of 83.5%, and specificity of 82.2%
-
-However, it should be noted that there was an error in the analysis which caused the paper to be retracted as the results were unable to be replicated. This indicates that the original findings were not reliable.
-
-### 
+However, it should be noted that there was an error in the analysis which caused the paper to be retracted as the results were unable to be replicated. Furthermore, the TD subjects were assigned random ASD severity scores. This indicates that the original findings were not reliable.
 
 ## Findings
 
