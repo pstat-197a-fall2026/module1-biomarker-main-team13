@@ -73,7 +73,9 @@ proteins_s2 <- rf_out$importance %>%
 #######################
 
 # select subset of interest
-proteins_sstar <- intersect(proteins_s1, proteins_s2)
+#proteins_sstar <- intersect(proteins_s1, proteins_s2)
+# New panel below
+proteins_sstar <- c("DERM", "IgD", "MAPK2", "FSTL1", "P-Cadherin", "EPHB2")
 
 biomarker_sstar <- biomarker_clean %>%
   select(group, any_of(proteins_sstar)) %>%
