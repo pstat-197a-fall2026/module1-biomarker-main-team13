@@ -30,7 +30,7 @@ Because many proteins in plasma/serum are altered in Autism Spectrum Disorder (A
 
 ## Dataset
 
-The dataset from Hewitson et al. (2021) contained 1,125 proteins used as a panel for Autism Spectrum Disorder (ASD) prediction in boys. The sample, which was collected via a blood test, included 76 boys with ASD and 78 typically developing (TD) boys, between 18 months and 8 years of age. While 1,317 were originally collected per subject, 192 proteins failed quality control so 1,125 were used in the publication.
+The dataset from Hewitson et al. (2021) contained 1,125 proteins used as a panel for Autism Spectrum Disorder (ASD) prediction in boys. The sample, which was collected via a blood test, included 76 boys with ASD and 78 typically developing (TD) boys, between 18 months and 8 years of age. While 1,317 were originally collected per subject, 192 proteins failed quality control so 1,125 were used in the publication. However, these 192 failed variables are still included in our analysis by default.
 
 The data was preprocessed with log transformation, standardization, outlier trimming, and quality control. The log transformation reduced the right skewness of the protein distributions. The standardization converted measurements to z-scores to make them comparable to each other. Outlier trimming was used to reduce the influence of extreme values by limiting standardized protein measurements to the range of −3 to +3.
 
@@ -43,6 +43,8 @@ However, it should be noted that there was an error in the analysis which caused
 ## Findings
 
 Summarize your findings here. I've included some subheaders in a way that seems natural to me; you can structure this section however you like.
+
+We performed the analysis again after setting aside some data as a testing data
 
 ### Impact of preprocessing and outliers
 

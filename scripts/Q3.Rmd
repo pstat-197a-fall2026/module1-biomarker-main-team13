@@ -1,0 +1,443 @@
+---
+title: "Q3"
+output: html_document
+---
+
+```{r}
+library(dplyr)
+library(tidyverse)
+library(infer)
+library(randomForest)
+library(tidymodels)
+library(modelr)
+library(yardstick)
+#load('data/biomarker-clean.RData')
+```
+
+Original Analysis:
+```{r}
+#load('~/Desktop/Pstat 197A/module1-biomarker-main-team13/data/biomarker-clean.RData')
+
+test_fn <- function(.df){
+  t_test(.df, 
+         formula = level ~ group,
+         order = c('ASD', 'TD'),
+         alternative = 'two-sided',
+         var.equal = F)
+}
+
+ttests_out <- biomarker_clean %>%
+  select(-ados) %>%
+  pivot_longer(-group, 
+               names_to = 'protein', 
+               values_to = 'level') %>%
+  nest(data = c(level, group)) %>% 
+  mutate(ttest = map(data, test_fn)) %>%
+  unnest(ttest) %>%
+  arrange(p_value) %>%
+  mutate(m = n(),
+         hm = log(m) + 1/(2*m) - digamma(1),
+         rank = row_number(),
+         p.adj = m*hm*p_value/rank)
+
+proteins_s1 <- ttests_out %>%
+  slice_min(p.adj, n = 10) %>%
+  pull(protein)
+
+predictors <- biomarker_clean %>%
+  select(-c(group, ados))
+
+response <- biomarker_clean %>% pull(group) %>% factor()
+
+set.seed(101422)
+rf_out <- randomForest(x = predictors, 
+                       y = response, 
+                       ntree = 1000, 
+                       importance = T)
+
+proteins_s2 <- rf_out$importance %>% 
+  as_tibble() %>%
+  mutate(protein = rownames(rf_out$importance)) %>%
+  slice_max(MeanDecreaseGini, n = 10) %>%
+  pull(protein)
+
+
+proteins_sstar <- intersect(proteins_s1, proteins_s2)
+
+biomarker_sstar <- biomarker_clean %>%
+  select(group, any_of(proteins_sstar)) %>%
+  mutate(class = (group == 'ASD')) %>%
+  select(-group)
+
+set.seed(101422)
+biomarker_split <- biomarker_sstar %>%
+  initial_split(prop = 0.8)
+
+fit <- glm(class ~ ., 
+           data = training(biomarker_split), 
+           family = 'binomial')
+
+class_metrics <- metric_set(sensitivity, 
+                            specificity, 
+                            accuracy,
+                            roc_auc)
+
+og_results <- testing(biomarker_split) %>%
+  add_predictions(fit, type = 'response') %>%
+  mutate(class = factor(class),
+    predicted_class = factor(pred > 0.5)
+  ) %>%
+  class_metrics(estimate = predicted_class,
+                truth = class, pred,
+                event_level = 'second'
+  )
+
+og_results
+```
+Original Results:
+
+sensitivity: 0.9375000		
+specificity: 0.7333333		
+accuracy: 0.8387097		
+roc_auc: 0.8958333	
+
+
+80-20 Train/Test Split:
+```{r}
+set.seed(197)
+
+biomarker_split <- initial_split(
+  biomarker_clean,
+  prop = 0.8,
+  strata = group
+)
+
+biomarker_train <- training(biomarker_split)
+biomarker_test  <- testing(biomarker_split)
+
+# Welch's t-test on training
+ttests_train <- biomarker_train %>%
+  select(-ados) %>%
+  pivot_longer(-group, 
+               names_to = 'protein', 
+               values_to = 'level') %>%
+  nest(data = c(level, group)) %>% 
+  mutate(ttest = map(data, test_fn)) %>%
+  unnest(ttest) %>%
+  arrange(p_value) %>%
+  mutate(m = n(),
+         hm = log(m) + 1/(2*m) - digamma(1),
+         rank = row_number(),
+         raw_adj = m*hm*p_value/rank,
+         p.adj = pmin(1, rev(cummin(rev(raw_adj)))))
+
+# select top 25 proteins
+proteins_s1 <- ttests_train %>%
+  slice_min(p.adj, n = 25, with_ties = F) %>%
+  pull(protein)
+
+# random forest on training by adjusted p-value
+predictors <- biomarker_train %>%
+  select(-c(group, ados))
+
+response <- biomarker_train %>% pull(group) %>% factor()
+
+set.seed(101422)
+rf_train <- randomForest(x = predictors, 
+                       y = response, 
+                       ntree = 1000, 
+                       importance = T)
+
+rf_train$confusion
+
+# select top 25 by random forest
+proteins_s2 <- rf_train$importance %>% 
+  as_tibble(rownames = "protein") %>%
+  slice_max(
+    MeanDecreaseGini, 
+    n = 25,
+    with_ties = F) %>%
+  pull(protein)
+
+# intersection for comparison
+proteins_sstar <- intersect(proteins_s1, proteins_s2)
+
+sstar <- function(df) {df %>%
+  select(group, any_of(proteins_sstar)) %>%
+  mutate(class = (group == 'ASD')) %>%
+  select(-group)}
+
+training_sstar <- sstar(biomarker_train)
+testing_sstar <- sstar(biomarker_test)
+
+fit <- glm(class ~ ., 
+           data = training_sstar, 
+           family = 'binomial')
+
+class_results <- metric_set(sensitivity, 
+                            specificity, 
+                            accuracy,
+                            roc_auc)
+
+
+train_results <- testing_sstar %>%
+  add_predictions(fit, type = 'response') %>%
+  mutate(class = factor(class),
+    predicted_class = factor(pred > 0.5)
+  ) %>%
+  class_metrics(estimate = predicted_class,
+                truth = class, pred,
+                event_level = 'second'
+  )
+
+print(train_results)
+
+data.frame(metric = og_results$.metric, 
+           diff =  train_results$.estimate - og_results$.estimate)
+
+# When we carry out the entire selection procedure on a training partition
+# Every estimated value is significantly lower than our initial findings
+# The smallest metric difference, specificity, is a decrease of approximately .09
+# The largest metric decrease, sensitivity, is by approximately 0.33
+# Overall, our new model performs worst than our original analysis
+# However, it is important to note that our original analysis may have overfitted
+# Note that our diff column is (new - old)
+```
+Train/Test Split Results:
+sensitivity: 0.875
+specificity: 0.75
+accuracy: 0.812
+roc_auc: 0.871
+
+Choosing larger subset of predictive proteins:
+```{r}
+set.seed(197)
+
+ttests_out <- biomarker_clean %>%
+  select(-ados) %>%
+  pivot_longer(-group, 
+               names_to = 'protein', 
+               values_to = 'level') %>%
+  nest(data = c(level, group)) %>% 
+  mutate(ttest = map(data, test_fn)) %>%
+  unnest(ttest) %>%
+  arrange(p_value) %>%
+  mutate(m = n(),
+         hm = log(m) + 1/(2*m) - digamma(1),
+         rank = row_number(),
+         p.adj = m*hm*p_value/rank)
+
+proteins_s1 <- ttests_out %>%
+  slice_min(p.adj, n = 25) %>%
+  pull(protein)
+
+
+
+predictors <- biomarker_clean %>%
+  select(-c(group, ados))
+
+response <- biomarker_clean %>% pull(group) %>% factor()
+
+set.seed(101422)
+rf_out <- randomForest(x = predictors, 
+                       y = response, 
+                       ntree = 1000, 
+                       importance = T)
+
+rf_out$confusion
+
+proteins_s2 <- rf_out$importance %>% 
+  as_tibble() %>%
+  mutate(protein = rownames(rf_out$importance)) %>%
+  slice_max(MeanDecreaseGini, n = 25) %>%
+  pull(protein)
+
+
+proteins_sstar <- intersect(proteins_s1, proteins_s2)
+
+biomarker_sstar <- biomarker_clean %>%
+  select(group, any_of(proteins_sstar)) %>%
+  mutate(class = (group == 'ASD')) %>%
+  select(-group)
+
+set.seed(101422)
+biomarker_split <- biomarker_sstar %>%
+  initial_split(prop = 0.8)
+
+fit <- glm(class ~ ., 
+           data = training(biomarker_split), 
+           family = 'binomial')
+
+class_metrics <- metric_set(sensitivity, 
+                            specificity, 
+                            accuracy,
+                            roc_auc)
+
+num_results <- testing(biomarker_split) %>%
+  add_predictions(fit, type = 'response') %>%
+  mutate(class = factor(class),
+    predicted_class = factor(pred > 0.5)
+  ) %>%
+  class_metrics(estimate = predicted_class,
+                truth = class, pred,
+                event_level = 'second'
+  )
+
+print(num_results)
+
+data.frame(metric = og_results$.metric, 
+           diff = num_results$.estimate - og_results$.estimate)
+
+# We changed the number of top predictive proteins using each selection method
+# We changed it from 10 to 25 proteins.
+# Every metric except sensitivity, which remained the same, increased
+# The smallest and largest increases were approximately .07 and .2, respectively
+```
+25 Top Predictive Proteins Results:
+sensitivity: 0.812
+specificity: 0.933
+accuracy: 0.871
+roc_auc: 0.95
+
+
+Fuzzy Intersection:
+```{r}
+set.seed(101422)
+
+#Assigning protein membership score by min-max normalization
+
+# Rank all proteins by Random Forest importance
+rf_membership <- rf_train$importance %>%
+  as_tibble(rownames = "protein") %>%
+  mutate(
+    rf_rank = rank(-MeanDecreaseGini),
+    mu_rf = 1 - (rf_rank - 1) / (n() - 1)
+  ) %>%
+  select(protein, rf_rank, mu_rf)
+
+# Rank all proteins by adjusted t-test p-value
+t_membership <- ttests_train %>%
+  mutate(
+    t_rank = rank(p.adj),
+    mu_t = 1 - (t_rank - 1) / (n() - 1)
+  ) %>%
+  select(protein, t_rank, mu_t)
+
+# Combine memberships using the minimum operator
+fuzzy_proteins <- inner_join(
+  rf_membership, 
+  t_membership,
+  by = "protein"
+) %>%
+  mutate(
+    mu_fuzzy = pmin(mu_rf, mu_t)
+  ) %>%
+  arrange(desc(mu_fuzzy))
+
+# Select the top 25 proteins with the highest fuzzy memberships
+proteins_fuzzy <- fuzzy_proteins %>%
+  slice_max(
+    mu_fuzzy, 
+    n = 25, 
+    with_ties = FALSE) %>%
+  pull(protein)
+
+fuzzy_proteins %>%
+  filter(protein %in% proteins_fuzzy) %>%
+  arrange(desc(mu_fuzzy))
+```
+
+```{r}
+# compare fuzzy selection
+setdiff(proteins_fuzzy, proteins_sstar)
+setdiff(proteins_sstar, proteins_fuzzy)
+```
+The top proteins with the highest fuzzy memberships are "Cadherin-5", "MIA", "MMP-2", "RET", and "TSP4".
+
+
+Logistic Regression
+```{r}
+biomarker_fuzzy_train <- biomarker_train %>%
+  select(group, all_of(proteins_fuzzy)) %>%
+  mutate(
+    class = factor(
+      group == "ASD",
+      levels = c(FALSE, TRUE)
+    )
+  ) %>%
+  select(-group)
+
+biomarker_fuzzy_test <- biomarker_test %>%
+  select(group, all_of(proteins_fuzzy)) %>%
+  mutate(
+    class = factor(
+      group == "ASD",
+      levels = c(FALSE, TRUE)
+    )
+  ) %>%
+  select(-group)
+
+# Fit using training data
+fit_fuzzy <- glm(
+  class ~ .,
+  data = biomarker_fuzzy_train,
+  family = "binomial"
+)
+
+# Evaluate only on held-out test data
+fuzzy_predictions <- biomarker_fuzzy_test %>%
+  mutate(
+    pred = predict(
+      fit_fuzzy,
+      newdata = biomarker_fuzzy_test,
+      type = "response"
+    ),
+    predicted_class = factor(
+      pred > 0.5,
+      levels = c(FALSE, TRUE)
+    )
+  )
+
+class_results <- metric_set(
+  sensitivity,
+  specificity,
+  accuracy
+)(
+  fuzzy_predictions,
+  truth = class,
+  estimate = predicted_class,
+  event_level = "second"
+)
+
+auc_result <- roc_auc(
+  fuzzy_predictions,
+  truth = class,
+  pred,
+  event_level = "second"
+)
+
+fuzzy_results <- bind_rows(class_results, auc_result)
+
+print(fuzzy_results)
+
+# Compare with original results
+data.frame(
+  metric = og_results$.metric,
+  diff = fuzzy_results$.estimate[
+    match(og_results$.metric, fuzzy_results$.metric)
+  ] - og_results$.estimate
+)
+
+#Through fuzzy intersection, we achieved a raw overall improvement
+#Specificity (0.2) and auc (0.05), slight decrease in sensitivity (-0.19)
+#Applied min-max normalization to calculate membership of rf and t-test, which we took the pmin between the two membership scores.
+#Should account for different methods in calculating membership scores.
+```
+Fuzzy Results:
+sensitivity: 0.688		
+specificity: 0.5		
+accuracy: 0.594		
+roc_auc: 0.637
+
+
+

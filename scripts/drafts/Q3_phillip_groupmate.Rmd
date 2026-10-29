@@ -303,16 +303,17 @@ print(num_results)
 data.frame(metric = og_results$.metric, 
            diff = num_results$.estimate - og_results$.estimate)
 
-# We change the number of top predictive proteins using each selection method
-# We changed it from 10 to 25
+# We changed the number of top predictive proteins using each selection method
+# We changed it from 10 to 25 proteins.
 # Every metric except sensitivity, which remained the same, increased
 # The smallest and largest increases were approximately .07 and .2, respectively
 ```
-25 Proteins Results:
+25 Top Predictive Proteins Results:
 sensitivity: 0.812
 specificity: 0.933
 accuracy: 0.871
 roc_auc: 0.95
+
 
 Fuzzy Intersection:
 ```{r}
@@ -357,6 +358,7 @@ proteins_fuzzy <- fuzzy_proteins %>%
 setdiff(proteins_fuzzy, proteins_sstar)
 setdiff(proteins_sstar, proteins_fuzzy)
 ```
+
 
 Logistic Regression
 ```{r}
