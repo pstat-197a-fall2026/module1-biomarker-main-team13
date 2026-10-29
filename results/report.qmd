@@ -55,7 +55,7 @@ After, we examined the what would happen if you removed the outlier trimming fro
 ### Methodological variations
 
 | Metrics | Original Analysis | Train/Test Split | 25 Subset | Fuzzy Intersection | Fuzzy Intersection 2 |
-|------------|------------|------------|------------|------------|------------|
+|----|----|----|----|----|----|
 | Sensitivity | 0.938 | -0.392 | -0.125 | -0.188 | -0.250 |
 | Specificity | 0.733 | -0.097 | 0.200 | 0.200 | 0.200 |
 | Accuracy | 0.839 | -0.248 | 0.032 | 0.000 | -0.032 |
