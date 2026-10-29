@@ -195,13 +195,6 @@ print(train_results)
 data.frame(metric = og_results$.metric, 
            diff =  train_results$.estimate - og_results$.estimate)
 
-# When we carry out the entire selection procedure on a training partition
-# Every estimated value is significantly lower than our initial findings
-# The smallest metric difference, specificity, is a decrease of approximately .09
-# The largest metric decrease, sensitivity, is by approximately 0.33
-# Overall, our new model performs worst than our original analysis
-# However, it is important to note that our original analysis may have overfitted
-# Note that our diff column is (new - old)
 ```
 Train/Test Split Results:
 sensitivity: 0.875
@@ -288,10 +281,6 @@ print(num_results)
 data.frame(metric = og_results$.metric, 
            diff = num_results$.estimate - og_results$.estimate)
 
-# We changed the number of top predictive proteins using each selection method
-# We changed it from 10 to 25 proteins.
-# Every metric except sensitivity, which remained the same, increased
-# The smallest and largest increases were approximately .07 and .2, respectively
 ```
 25 Top Predictive Proteins Results:
 sensitivity: 0.812
@@ -427,10 +416,6 @@ data.frame(
   ] - og_results$.estimate
 )
 
-#Through fuzzy intersection, we achieved a raw overall improvement
-#Specificity (0.2) and auc (0.05), slight decrease in sensitivity (-0.19)
-#Applied min-max normalization to calculate membership of rf and t-test, which we took the pmin between the two membership scores.
-#Should account for different methods in calculating membership scores.
 ```
 Fuzzy Results:
 sensitivity: 0.688		

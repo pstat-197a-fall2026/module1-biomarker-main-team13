@@ -400,6 +400,7 @@ data.frame(metric = og_results$.metric,
 #Specificity (0.2) and auc (0.05), slight decrease in sensitivity (-0.19)
 #Applied min-max normalization to calculate membership of rf and t-test, which we took the pmin between the two membership scores.
 #Should account for different methods in calculating membership scores.
+
 ```
 Fuzzy Results:
 sensitivity: 0.7500000		
