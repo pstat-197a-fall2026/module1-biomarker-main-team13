@@ -157,10 +157,19 @@ print(fuzzy_results)
 data.frame(metric = og_results$.metric, 
            diff = fuzzy_results$.estimate - og_results$.estimate)
 
-# Every metric except sensitivity increased in value
-# Each increase, with the exception of specificity, is not incredibly large 
-# Our overall AUC improved, which is a good sign that the fuzzy intersection is better
-# This version of the model is more prone to type II errors 
+
+# Note that our diff column is (new - old)
+# Our fuzzy intersection is performing significantly worse in sensitivity
+# There is an almost .25 decrease in value
+# On the other hand, our specificity is performing much better than our original
+# Our specificity score went up by almost .2
+# Our accuracy and roc_auc scores were not greatly impacted 
+# Accuracy had a slight decrease of approximately 0.03 
+# roc_auc had a slight increase of around 0.05
+# We cannot conclusively say that this fuzzy intersection is better than the original
+# It has both huge drawbacks and improvements 
+# This version is more vulnerable to Type II errors
+# It is less prone to Type I errors
 ```
 sensitivity: 0.688
 specificity: 0.933
@@ -257,10 +266,9 @@ data.frame(metric = og_results$.metric,
 # When we carry out the entire selection procedure on a training partition
 # Every estimated value is significantly lower than our initial findings
 # The smallest metric difference, specificity, is a decrease of approximately .09
-# The largest metric decrease, sensitivity, is by approximately 0.33
+# The largest metric decrease, sensitivity, is by approximately 0.39
 # Overall, our new model performs worst than our original analysis
-# However, it is important to note that our original analyis may have overfitted
-# Note that our diff column is (new - old)
+# However, it is important to note that our original analysis may have overfitted
 ```
 sensitivity: 0.545
 specificity: 0.636
@@ -349,12 +357,14 @@ data.frame(metric = og_results$.metric,
            diff = num_results$.estimate - og_results$.estimate)
 
 
-# We change the number of top predictive proteins using each selection method
-# We changed it from 10 to 25
-# Every metric except sensitivity, which remained the same, increased
-# The smallest and largest increases were approximately .07 and .2, respectively
-# However, choosing so many proteins may be leading to overfitting
-# Therefore, we cannot completely conlcude that this model is better
+# We changed the number of top predictive proteins using each selection method
+# We changed it from 10 to 25 proteins.
+# Our sensitivity and specificity scores were most impacted
+# Sensitivity decreased by approximately .126
+# Specificity increased by approximately .2
+# Our accuracy and roc_auc scores both increased but not dramatically
+# Accuracy and roc_auc increased by approximately .032 and .054, respectively
+# Every metric except sensitivity increased
 ```
 sensitivty: 0.812
 specficity: 0.933
