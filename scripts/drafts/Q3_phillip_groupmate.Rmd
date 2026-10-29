@@ -358,7 +358,7 @@ proteins_fuzzy <- fuzzy_proteins %>%
 setdiff(proteins_fuzzy, proteins_sstar)
 setdiff(proteins_sstar, proteins_fuzzy)
 ```
-
+Results: "Cadherin-5","MIA","MMP-2","RET","TSP4" 
 
 Logistic Regression
 ```{r}
@@ -406,6 +406,13 @@ sensitivity: 0.7500000
 specificity: 0.9333333		
 accuracy: 0.8387097		
 roc_auc: 0.9500000
+
+
+Fuzzy Results:
+sensitivity: -0.1875
+specificity: 0.2
+accuracy: 0
+roc_auc: 0.05416667
 
 
 

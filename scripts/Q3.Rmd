@@ -352,7 +352,6 @@ fuzzy_proteins %>%
 setdiff(proteins_fuzzy, proteins_sstar)
 setdiff(proteins_sstar, proteins_fuzzy)
 ```
-The top proteins with the highest fuzzy memberships are "Cadherin-5", "MIA", "MMP-2", "RET", and "TSP4".
 
 
 Logistic Regression

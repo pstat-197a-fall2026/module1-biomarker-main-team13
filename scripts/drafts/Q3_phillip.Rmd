@@ -95,6 +95,10 @@ og_results <- testing(biomarker_split) %>%
 
 og_results
 ```
+sensitivity: 0.9375
+specificity: 0.7333333
+accuracy: 0.8387097
+roc_auc: 0.8958333
 
 ```{r}
 # fuzzy intersection
@@ -155,7 +159,10 @@ data.frame(metric = og_results$.metric,
 
 
 ```
-
+sensitivity: 0.688
+specificity: 0.933
+accuracy: 0.806
+roc_auc: 0.942
 
 ```{r}
 # training and test data
@@ -244,6 +251,11 @@ data.frame(metric = og_results$.metric,
 
 
 ```
+sensitivity: 0.545
+specificity: 0.636
+accuracy: 0.591
+roc_auc: 0.705
+
 
 ```{r}
 # Changing numbers
@@ -326,7 +338,10 @@ data.frame(metric = og_results$.metric,
            diff = num_results$.estimate - og_results$.estimate)
 
 ```
-
+sensitivty: 0.812
+specficity: 0.933
+accuracy: 0.871
+roc_auc: 0.95
 
 
 
