@@ -157,10 +157,10 @@ print(fuzzy_results)
 data.frame(metric = og_results$.metric, 
            diff = fuzzy_results$.estimate - og_results$.estimate)
 
-#Through fuzzy intersection, we achieved a raw overall improvement
-#Specificity (0.2) and auc (0.05), slight decrease in sensitivity (-0.19)
-#Applied min-max normalization to calculate membership of rf and t-test, which we took the pmin between the two membership scores.
-#Should account for different methods in calculating membership scores.
+# Every metric except sensitivity increased in value
+# Each increase, with the exception of specificity, is not incredibly large 
+# Our overall AUC improved, which is a good sign that the fuzzy intersection is better
+# This version of the model is more prone to type II errors 
 ```
 sensitivity: 0.688
 specificity: 0.933
@@ -259,7 +259,7 @@ data.frame(metric = og_results$.metric,
 # The smallest metric difference, specificity, is a decrease of approximately .09
 # The largest metric decrease, sensitivity, is by approximately 0.33
 # Overall, our new model performs worst than our original analysis
-# However, it is important to note that our original analysis may have overfitted
+# However, it is important to note that our original analyis may have overfitted
 # Note that our diff column is (new - old)
 ```
 sensitivity: 0.545
@@ -349,10 +349,12 @@ data.frame(metric = og_results$.metric,
            diff = num_results$.estimate - og_results$.estimate)
 
 
-# We changed the number of top predictive proteins using each selection method
-# We changed it from 10 to 25 proteins.
+# We change the number of top predictive proteins using each selection method
+# We changed it from 10 to 25
 # Every metric except sensitivity, which remained the same, increased
 # The smallest and largest increases were approximately .07 and .2, respectively
+# However, choosing so many proteins may be leading to overfitting
+# Therefore, we cannot completely conlcude that this model is better
 ```
 sensitivty: 0.812
 specficity: 0.933
