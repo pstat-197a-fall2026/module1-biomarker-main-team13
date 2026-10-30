@@ -42,10 +42,6 @@ However, it should be noted that there was an error in the analysis which caused
 
 ## Findings
 
-Summarize your findings here. I've included some subheaders in a way that seems natural to me; you can structure this section however you like.
-
-We performed the analysis again after setting aside some data as a testing data
-
 ### Impact of preprocessing and outliers
 
 To investigate what preprocessing did we first examined what the raw distribution of the protein levels looked like in comparison to the log-transformed numbers. After analysis it was determined that a log transformation was applied because a lot of the data was right skewed. This means that while most subjects had low proteins, some did have high. In order to reduce the influence of the extremes they needed to be compressed with log transformation. However, it should be noted that even after a log transformation, not every protein is normally distributed, and some are left as right skewed.
@@ -55,7 +51,7 @@ After, we examined the what would happen if you removed the outlier trimming fro
 ### Methodological variations
 
 | Metrics | Original Analysis | Train/Test Split | 25 Subset | Fuzzy Intersection | Fuzzy Intersection 2 |
-|----|----|----|----|----|----|
+|------------|------------|------------|------------|------------|------------|
 | Sensitivity | 0.938 | -0.392 | -0.125 | -0.188 | -0.250 |
 | Specificity | 0.733 | -0.097 | 0.200 | 0.200 | 0.200 |
 | Accuracy | 0.839 | -0.248 | 0.032 | 0.000 | -0.032 |
