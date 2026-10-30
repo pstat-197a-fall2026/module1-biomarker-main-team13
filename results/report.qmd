@@ -1,6 +1,5 @@
 ---
 title: "Biomarkers of ASD"
-subtitle: "If you want a subtitle put it here"
 authors: 
   - "Alison Gu"
   - "James Liang"
