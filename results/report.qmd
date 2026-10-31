@@ -25,7 +25,7 @@ library(tidyverse)
 
 ## Abstract
 
-Because many proteins in plasma/serum are altered in Autism Spectrum Disorder (ASD), a panel of proteins can be a blood biomarker for ASD. Therefore, in this module, we investigated how preprocessing, outlier removal, and protein selection methods affect a classification model that distinguishes between individuals with Autism Spectrum Disorder (ASD) and those who are typically developing (TD). We found that log transformation reduced the right skewness of the protein distributions and that TD individuals typically had more outliers on average in comparison to ASD individuals. Furthermore, changes in protein selection can change how a model performs, suggesting possible overfitting in the original analysis. Finally, we improved our classifier and increased accuracy from 0.746 to 0.783 and AUC from 0.828 to 0.877. Overall, our findings highlight the importance of preprocessing and protein selection when improving ASD classification models.
+Because many proteins in plasma/serum are altered in Autism Spectrum Disorder (ASD), a panel of proteins can be a blood biomarker for ASD. Therefore, in this module, we investigated how preprocessing, outlier removal, and protein selection methods affect a classification model that distinguishes between individuals with Autism Spectrum Disorder (ASD) and those who are typically developing (TD). We found that log transformation reduced the right skewness of the protein distributions and that TD individuals typically had more outliers on average in comparison to ASD individuals. Furthermore, changes in protein selection can change how a model performs, suggesting possible overfitting and data leakage in the original analysis. Finally, we improved our classifier and increased accuracy from 0.746 to 0.783 and AUC from 0.828 to 0.877. Overall, our findings highlight the importance of preprocessing and protein selection design when improving ASD classification models.
 
 ## Dataset
 
@@ -62,7 +62,7 @@ For our modifications in protein selection, we first took a 71/29 training and t
 
 ### Improved classifier
 
-Our methodology was to use forward selection from the 30 proteins with the smallest t-test p-values, adding the protein that improved 5-fold cross-validated AUC, stopping when the gain fell below 0.005, similar to what the published paper conducted. We found that the new panel that best improved AUC was as follows: DERM, MAPK2, IgD, P-Cadherin and PTN. The original panel had the following proteins: DERM, RELT, and IgD. Like in the in-class analysis, the panel was selected using the full dataset, so the test data were also seen during both panels' accuracy estimates are likely optimistic to some degree.
+Our methodology was to use forward selection from the 30 proteins with the smallest t-test p-values, adding the protein that improved 5-fold cross-validated AUC, stopping when the gain fell below 0.005, similar to what the published paper conducted. We found that the new panel that best improved AUC was as follows: DERM, MAPK2, IgD, P-Cadherin and PTN. The original panel had the following proteins: DERM, RELT, and IgD. Like in the in-class analysis, the panel was selected using the full dataset, so the test data was seen during both. The panels' accuracy estimates are likely optimistic to some degree.
 
 | Single Split Metrics | In-Class | New Panel | Delta  |
 |----------------------|----------|-----------|--------|
